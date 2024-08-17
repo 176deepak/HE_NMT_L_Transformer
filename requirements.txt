@@ -1,0 +1,6 @@
+numpy
+pandas
+datasets
+pyyaml
+notebook
+tqdm
