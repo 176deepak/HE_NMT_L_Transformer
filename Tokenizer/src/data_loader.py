@@ -2,8 +2,10 @@ import os
 from pathlib import Path
 import datasets as ds
 import yaml
+import pandas as pd
 from tqdm import tqdm
-from utils import make_fldrs
+from src.utils import make_fldrs, is_valid_row
+from src import hi_chrs
 
 
 CONFIG_FILE = Path(r"config\configurations.yaml")
@@ -33,17 +35,32 @@ class DataLoader:
     def load_data(self):
         splits = ds.get_dataset_split_names(self.data_repo)
         data = ds.load_dataset(self.data_repo)
+        
+        # train, validation & test splits
+        train_df = pd.DataFrame(data['train']['translation'])
+        validation_df = pd.DataFrame(data['validation']['translation'])
+        test_df = pd.DataFrame(data['test']['translation'])
+        
+        train_df = train_df[train_df['en'].apply(is_valid_row) & train_df['hi'].apply(is_valid_row)]
+        validation_df = validation_df[validation_df['en'].apply(is_valid_row) & validation_df['hi'].apply(is_valid_row)]
+        test_df = test_df[test_df['en'].apply(is_valid_row) & test_df['hi'].apply(is_valid_row)]
+        
+        dfs = [train_df, validation_df, test_df]
 
-        for split in tqdm(splits, desc="Tokenizer Data Loading..."):
-            records = data[split]['translation']
+        for col in self.lang_keys:
             
-            for key in self.lang_keys:
-                lang_records = [rec[key] for rec in records]
+            print(f"Loading {col} data...")
+            
+            for i, df in tqdm(enumerate(dfs)):
+                lines = [str(line) + " \n" for line in list(df[col])]
+                with open(os.path.join(self.data_bkt, col, f"{i}.txt"), 'w', encoding='utf-8') as f:
+                    f.writelines(lines)
+                f.close()
                 
-                with open(os.path.join(self.data_bkt, key, f"{split}_{key}_corpus.txt"), 'w', encoding='utf8') as file:
-                    for line in lang_records:
-                        file.write(line.strip("\n") + "\n")
-                    file.close()                
+            if col == 'hi':
+                with open(os.path.join(self.data_bkt, col, f"chrs.txt"), 'w', encoding='utf-8') as f:
+                    f.writelines([hi_chr + " \n" for hi_chr in hi_chrs])
+
                 
 if __name__ == "__main__":
     loader = DataLoader()
