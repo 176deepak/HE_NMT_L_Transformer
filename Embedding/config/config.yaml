@@ -1,0 +1,4 @@
+word2vec:
+    hf_data_src: "cfilt/iitb-english-hindi"
+    data_igt_bkt: "data/"
+    lang_keys: ["en", "hi"]
