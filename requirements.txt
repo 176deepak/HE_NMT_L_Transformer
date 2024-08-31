@@ -4,3 +4,5 @@ datasets
 pyyaml
 notebook
 tqdm
+tokenizers
+gensim

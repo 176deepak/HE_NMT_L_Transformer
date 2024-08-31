@@ -17,3 +17,8 @@ One important question is, where does the data come from? We used the IIT Bombay
 
 ## Tokenizer
 The first step in building any NLP application is the tokenizer. Here, we used the Byte Pair Encoding (BPE) algorithm to create our tokenizer.
+
+## Word Embedding
+The next step in building our application is to train embeddings model on data, so that we can use better context embedding. Here we have used the word2vec solution for training our embedding model. 
+
+`Note: We have used the tokenizers library for BPE tokenizer to train our dataset. Later, we will create our BPE(something else) tokenizer from scratch. Later on we will train our word2vec solution using CBOW or skipgrams model.`
