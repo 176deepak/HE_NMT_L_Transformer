@@ -1,0 +1,24 @@
+# Project data directories configurations
+
+# Data Source configurations
+Data_Source:
+    src: hf
+    src_repo: cfilt/iitb-english-hindi
+    split: ["train", "validation", "test"]
+    cols: ["en", "hi"]
+
+# Data Loader configurations
+Data_Loader:
+    ign_root_dir: data
+    
+
+# Tokenizer configurations
+Tokenizer:
+
+
+# Word Embedding configurations
+Embedding:
+
+
+# Transformer configurations
+Transformer:

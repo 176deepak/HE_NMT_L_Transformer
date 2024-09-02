@@ -11,6 +11,17 @@ def make_fldrs(paths:list[plb.Path]) -> None:
         os.makedirs(path, exist_ok=True)
         
         
+def batch_generator(seqs, batch_size=32):
+    batch = []
+    for seq in seqs:
+        batch.append(seq)
+        if len(batch) == batch_size:
+            yield batch
+            batch = []
+    if batch:
+        yield batch
+        
+        
 def is_valid_row(text):
     # Unicode range for Devanagari script (Hindi): \u0900-\u097F
     allowed_symbols = r'€£¥§³ØĐǆΩ∞°±µ²³‰₹¢ƒ•¶™©®√π'
