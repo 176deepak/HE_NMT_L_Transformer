@@ -10,12 +10,18 @@ Data_Source:
 
 # Data Loader configurations
 Data_Loader:
+    root_dir: Data_Loader
     ign_root_dir: data
     
 
 # Tokenizer configurations
 Tokenizer:
-
+    root_dir: Tokenizer
+    src_data_dir: data
+    temp_data_dir: temp_data
+    sub_folders: ["en", "hi"]
+    ckpts_bkt: Tokenizer_Ckpts
+    
 
 # Word Embedding configurations
 Embedding:
