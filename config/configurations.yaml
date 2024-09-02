@@ -5,7 +5,8 @@ Data_Source:
     src: hf
     src_repo: cfilt/iitb-english-hindi
     split: ["train", "validation", "test"]
-    cols: ["en", "hi"]
+    feature: translation
+    cols_key: ["en", "hi"]
 
 # Data Loader configurations
 Data_Loader:
