@@ -25,3 +25,39 @@ The next step in building our application is to train embeddings model on data, 
 
 ## Transformer
 Now, It's time to build our transformer model. We build a transformer model using the very first transformer model(`Attention Is All You Need`)[Research Paper](https://arxiv.org/abs/1706.03762). 
+
+
+# How to Run:
+For running this project on your local machine, first you need to clone the repo using below command. 
+
+`Note: Below instructions are for windows machine, you can run this project on any machine with some minor changes in commands.`
+
+```cmd
+git clone https://github.com/176deepak/HE_NMT_L_Transformer.git
+```
+
+Jump to project folder
+```
+cd HE_NMT_L_Transformer
+```
+
+Now, you need to create your python venv using below command.
+```
+python -m venv [ENV_NAME]
+```
+
+Activate the your venv
+```
+[ENV_NAME]\Scripts\activate.bat
+```
+
+Install the dependencise, using
+```
+pip install -r requirements.txt
+```
+
+Now, run the below command for executing the main.py file
+```
+python main.py --TrainTokenizer --TrainEmbedding
+```
+`Note: You can execute the main file without args also. This is just for training the tokenizer and embedding on loaded data.`
