@@ -17,8 +17,8 @@ class WordEmbedding:
         with open(self.config_path, 'r') as f:
             self.cfgs = yaml.safe_load(f)
         
-        self.src_data = self.cfgs['Embedding']['src_data_dir']
-        self.ckpts_dir = os.path.join(self.cfgs['Embedding']['root_dir'], self.cfgs['Embedding']['ckpts_bkt'])
+        self.src_data = os.path.join(self.cfgs['Artifacts']['root_dir'], self.cfgs['Embedding']['src_data_dir'])
+        self.ckpts_dir = os.path.join(self.cfgs['Artifacts']['root_dir'], self.cfgs['Embedding']['ckpts_bkt'])
         self.sub_dirs = self.cfgs['Embedding']['sub_folders']
         
         os.makedirs(self.ckpts_dir, exist_ok=True)
@@ -42,11 +42,13 @@ class WordEmbedding:
         col = flag
         sentences = list(self.df[col])
         seqs_of_tokens = []
-        for batched_seqs in tqdm(batch_generator(sentences), desc="Tokens Generation:", colour='green'):
+        
+        batch_size = 32
+        total_batches = (len(sentences) + batch_size - 1) // batch_size
+        
+        for batched_seqs in tqdm(batch_generator(sentences), desc=f"{col} Tokens Generation:", colour='green', ncols=100, total=total_batches):
             batched_tokens = tokens_for_embeddings(tokenizer, batched_seqs)
             seqs_of_tokens.extend(batched_tokens)
-            
-        tokens = list(map(lambda tokens: [re.sub("##", "", token) for token in tokens], seqs_of_tokens))
-        model = Word2Vec(sentences=tokens, vector_size=512, seed=42, workers=3, sg=0)
+        model = Word2Vec(sentences=seqs_of_tokens, vector_size=512, seed=42, workers=3, sg=0, )
         model.save(os.path.join(self.ckpts_dir, col, 'model.model'))            
 

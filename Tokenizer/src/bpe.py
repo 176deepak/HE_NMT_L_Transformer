@@ -40,11 +40,7 @@ class BPE_Tokenizer:
         )
         
         files = [os.path.join(data_src, file) for file in os.listdir(data_src)]
-        
-        print(f"Tokenizer training start...")
         tokenizer.train(files, trainer)
-        print(f"Tokenizer training end...")
-        
         # tokenizer.save(json_save_dir)
         return tokenizer
         

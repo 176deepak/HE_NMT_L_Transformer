@@ -1,5 +1,9 @@
 # Project data directories configurations
 
+# Artifacts Configurations
+Artifacts:
+    root_dir: artifacts
+
 # Data Source configurations
 Data_Source:
     src: hf
@@ -20,14 +24,14 @@ Tokenizer:
     src_data_dir: data
     temp_data_dir: temp_data
     sub_folders: ["en", "hi"]
-    ckpts_bkt: Tokenizer_Ckpts
+    ckpts_bkt: tokenizer_cfgs
     
 
 # Word Embedding configurations
 Embedding:
     root_dir: Embedding
     src_data_dir: data
-    ckpts_bkt: Embedding_Ckpts
+    ckpts_bkt: embedding_ckpts
     sub_folders: ["en", "hi"]
 
 # Transformer configurations
