@@ -22,3 +22,6 @@ The first step in building any NLP application is the tokenizer. Here, we used t
 The next step in building our application is to train embeddings model on data, so that we can use better context embedding. Here we have used the word2vec solution for training our embedding model. 
 
 `Note: We have used the tokenizers library for BPE tokenizer to train our dataset. Later, we will create our BPE(something else) tokenizer from scratch. Later on we will train our word2vec solution using CBOW or skipgrams model.`
+
+## Transformer
+Now, It's time to build our transformer model. We build a transformer model using the very first transformer model(`Attention Is All You Need`)[Research Paper](https://arxiv.org/abs/1706.03762). 
