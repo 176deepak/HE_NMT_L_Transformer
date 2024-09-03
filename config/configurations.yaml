@@ -25,7 +25,10 @@ Tokenizer:
 
 # Word Embedding configurations
 Embedding:
-
+    root_dir: Embedding
+    src_data_dir: data
+    ckpts_bkt: Embedding_Ckpts
+    sub_folders: ["en", "hi"]
 
 # Transformer configurations
 Transformer:

@@ -1,17 +1,52 @@
 import os
-import shutil
-from pathlib import Path
+import yaml
 import re
-import numpy as np
+from pathlib import Path
 import pandas as pd
-from tokenizers import Tokenizer
 from gensim.models import Word2Vec
 from tqdm import tqdm
+from utils.utils import batch_generator, tokens_for_embeddings
 
 
-CONFIG_FILE = Path(r"config\config.yaml")
+CONFIGURATIONS = Path(r'config\configurations.yaml')
 
-
-class Word2Vec:
-    def __init__(self, tokenizer_cfg):
+class WordEmbedding:
+    def __init__(self, config_path=CONFIGURATIONS):
+        self.config_path = config_path
         
+        with open(self.config_path, 'r') as f:
+            self.cfgs = yaml.safe_load(f)
+        
+        self.src_data = self.cfgs['Embedding']['src_data_dir']
+        self.ckpts_dir = os.path.join(self.cfgs['Embedding']['root_dir'], self.cfgs['Embedding']['ckpts_bkt'])
+        self.sub_dirs = self.cfgs['Embedding']['sub_folders']
+        
+        os.makedirs(self.ckpts_dir, exist_ok=True)
+
+        for dir in self.sub_dirs:
+            os.makedirs(os.path.join(self.ckpts_dir, dir), exist_ok=True)
+            
+        self.files = os.listdir(self.src_data)
+        
+        self.dfs = []
+        for file in self.files:
+            file_path = os.path.join(self.src_data, file)
+            self.dfs.append(pd.read_csv(file_path))
+        
+        self.df = pd.concat(self.dfs, ignore_index=True)
+        self.df.dropna(ignore_index=True, inplace=True)
+            
+        del self.dfs
+            
+    def train_embedding(self, tokenizer, flag):
+        col = flag
+        sentences = list(self.df[col])
+        seqs_of_tokens = []
+        for batched_seqs in tqdm(batch_generator(sentences), desc="Tokens Generation:", colour='green'):
+            batched_tokens = tokens_for_embeddings(tokenizer, batched_seqs)
+            seqs_of_tokens.extend(batched_tokens)
+            
+        tokens = list(map(lambda tokens: [re.sub("##", "", token) for token in tokens], seqs_of_tokens))
+        model = Word2Vec(sentences=tokens, vector_size=512, seed=42, workers=3, sg=0)
+        model.save(os.path.join(self.ckpts_dir, col, 'model.model'))            
+

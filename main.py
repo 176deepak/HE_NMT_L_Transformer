@@ -6,14 +6,17 @@ import argparse
 from Data_Loader.src.loader import DataLoader
 from Tokenizer.src.data_loader import DataProcessor
 from Tokenizer.src.bpe import BPE_Tokenizer
+from Embedding.src.embedding import WordEmbedding
 from tokenizers import normalizers
 from tokenizers.normalizers import NFD, StripAccents
 from tokenizers.pre_tokenizers import Whitespace
+from tokenizers import Tokenizer
+from tqdm import tqdm
 
 
 parser = argparse.ArgumentParser(description="Run specific code blocks based on boolean flags.")
 # Add boolean arguments
-parser.add_argument("--TrainTokenizer", action="store_true", help="Helps to execute the Tokenizer step")
+parser.add_argument("--TrainTokenizer", action="store_true", help="Helps to execute the Tokenizer step & Embedding Step")
 parser.add_argument("--TrainEmbedding", action="store_true", help="Helps to execute the Embedding Step")
 args = parser.parse_args()
 
@@ -71,8 +74,14 @@ if args.TrainTokenizer:
             
     shutil.rmtree(data_bkt)
 
+
 # Step 3: Train Word2Vec embedding model on custom tokens data, if you want
 if args.TrainEmbedding:
-    pass
+    word2vec = WordEmbedding()
+    for dir in tqdm(cfgs['Embedding']['sub_folders'], desc="Word2Vec Embedding Training: ", colour="green"):    
+        tokenizer = Tokenizer.from_file(os.path.join(cfgs['Tokenizer']['root_dir'], cfgs['Tokenizer']['ckpts_bkt'], dir, 'tokenizer.json'))
+        word2vec.train_embedding(tokenizer=tokenizer, flag=dir)
+    
+    
 
 # Step 4: Train Transformer model on custom dataset with using trained/pre-trained tokenizer and word embeddings.

@@ -163,3 +163,4 @@ cython_debug/
 data/
 research
 Tokenizer_Ckpts
+Embedding_Ckpts
