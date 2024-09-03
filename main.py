@@ -83,5 +83,4 @@ if args.TrainEmbedding:
         word2vec.train_embedding(tokenizer=tokenizer, flag=dir)
     
     
-
 # Step 4: Train Transformer model on custom dataset with using trained/pre-trained tokenizer and word embeddings.
