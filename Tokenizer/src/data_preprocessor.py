@@ -3,8 +3,7 @@ from pathlib import Path
 import yaml
 import pandas as pd
 from tqdm import tqdm
-from Tokenizer.src import hi_chrs
-
+from Tokenizer.src import chrs
 
 CONFIG_FILE = Path(r"config\configurations.yaml")
 
@@ -40,10 +39,13 @@ class DataProcessor:
                 lines = [str(line) + " \n" for line in list(df[bkt])]
                 with open(os.path.join(self.temp_bkt, bkt, f"{i}.txt"), 'w', encoding='utf-8') as f:
                     f.writelines(lines)
+                    
+            with open(os.path.join(self.temp_bkt, bkt, f"chrs.txt"), 'w', encoding='utf-8') as f:
+                f.writelines([" ".join(chrs[bkt])])
                 
-            if bkt == 'hi':
-                with open(os.path.join(self.temp_bkt, bkt, f"chrs.txt"), 'w', encoding='utf-8') as f:
-                    f.writelines([hi_chr + " \n" for hi_chr in hi_chrs])
+            # if bkt == 'hi':
+            #     with open(os.path.join(self.temp_bkt, bkt, f"chrs.txt"), 'w', encoding='utf-8') as f:
+            #         f.writelines([" ".join(hi_chrs)])
                 
                 
 if __name__ == "__main__":

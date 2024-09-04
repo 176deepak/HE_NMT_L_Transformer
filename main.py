@@ -62,7 +62,7 @@ if args.TrainTokenizer:
 
         if dir == 'en':
             bpe_tokenizer = BPE_Tokenizer(
-                special_tokens=["[UNK]", "[CLS]", "[SEP]", "[PAD]", "[MASK]"], 
+                special_tokens=["[UNK]", "[CLS]", "[SEP]", "[PAD]", "[MASK]", "[SOS]", "[EOS]"], 
                 unk_token="[UNK]", 
                 norm_seq=normalizers.Sequence([NFD(), StripAccents()]), 
                 pre_tokenizer=Whitespace(), 
@@ -76,7 +76,7 @@ if args.TrainTokenizer:
         
         if dir == 'hi':
             bpe_tokenizer = BPE_Tokenizer(
-                special_tokens=["[UNK]", "[CLS]", "[SEP]", "[PAD]", "[MASK]"], 
+                special_tokens=["[UNK]", "[CLS]", "[SEP]", "[PAD]", "[MASK]", "[SOS]", "[EOS]"], 
                 unk_token="[UNK]", 
                 pre_tokenizer=Whitespace(), 
                 vocab_size=2_08_000, 
@@ -100,6 +100,12 @@ if args.TrainEmbedding:
     word2vec = WordEmbedding()
     for dir in tqdm(cfgs['Embedding']['sub_folders'], desc="Word2Vec Embedding Training: ", colour="green", ncols=100, total=len(cfgs['Embedding']['sub_folders'])):    
         tokenizer = Tokenizer.from_file(os.path.join(cfgs['Artifacts']['root_dir'], cfgs['Tokenizer']['ckpts_bkt'], dir, 'tokenizer.json'))
+        tokenizer.enable_padding(
+            direction='right',
+            pad_id=3,
+            pad_type_id=0,
+            pad_token='[PAD]',
+            length=None)
         word2vec.train_embedding(tokenizer=tokenizer, flag=dir)
         print('\n')
     print("+"*trml_cols)

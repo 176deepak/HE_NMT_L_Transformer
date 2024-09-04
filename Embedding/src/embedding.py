@@ -40,7 +40,13 @@ class WordEmbedding:
             
     def train_embedding(self, tokenizer, flag):
         col = flag
-        sentences = list(self.df[col])
+        
+        if flag=='hi':
+            sentences = [f"[SOS] {seq} [EOS]" for seq in self.df[col]]
+        else:
+            sentences = list(self.df[col])
+        
+        
         seqs_of_tokens = []
         
         batch_size = 32

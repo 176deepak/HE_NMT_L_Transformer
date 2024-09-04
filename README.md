@@ -60,4 +60,14 @@ Now, run the below command for executing the main.py file
 ```
 python main.py --TrainTokenizer --TrainEmbedding
 ```
+After executing above command in terminal, you will see below output logs on your screen:
+
+![command](/screenshot/Screenshot%202024-09-03%20164641.png)
+![Data Loading](/screenshot/Screenshot%202024-09-03%20164612.png)
+![BPE Tokenizer](/screenshot/Screenshot%202024-09-03%20162842.png)
+![Word Embedding](/screenshot/Screenshot%202024-09-03%20163724.png)
+
+The above command execution, create the following directories and stores the data, tokenizer configs, embedding checkpoints, word embeddings.
+![Artifacts Folder](/screenshot/Screenshot%202024-09-04%20223101.png)
+
 `Note: You can execute the main file without args also. This is just for training the tokenizer and embedding on loaded data.`
