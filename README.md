@@ -16,10 +16,12 @@ One important question is, where does the data come from? We used the IIT Bombay
 [Data Source](https://huggingface.co/datasets/cfilt/iitb-english-hindi)
 
 ## Tokenizer
-The first step in building any NLP application is the tokenizer. Here, we used the Byte Pair Encoding (BPE) algorithm to create our tokenizer.
+The first step in building any NLP application is the tokenizer. Here, we used the Byte Pair Encoding (BPE) algorithm to create our tokenizer. 
+We trained our tokenizer on same data, and after training there are total `373705` sub-tokens trained.
 
 ## Word Embedding
 The next step in building our application is to train embeddings model on data, so that we can use better context embedding. Here we have used the word2vec solution for training our embedding model. 
+We trained our embedding model over all of the data, subtokens. Here we have used `512` as embedding dimension size.
 
 `Note: We have used the tokenizers library for BPE tokenizer to train our dataset. Later, we will create our BPE(something else) tokenizer from scratch. Later on we will train our word2vec solution using CBOW or skipgrams model.`
 
@@ -71,3 +73,8 @@ The above command execution, create the following directories and stores the dat
 ![Artifacts Folder](/screenshot/Screenshot%202024-09-04%20223101.png)
 
 `Note: You can execute the main file without args also. This is just for training the tokenizer and embedding on loaded data.`
+
+# Trained Tokenizer Demo:
+![Tokenizer Demo](screenshot/Screenshot%202024-09-10%20162943.png)
+![Tokenizer Demo](screenshot/Screenshot%202024-09-10%20163026.png)
+![Tokenizer Demo](screenshot/Screenshot%202024-09-10%20163049.png)
