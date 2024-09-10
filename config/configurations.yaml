@@ -24,6 +24,7 @@ Tokenizer:
     src_data_dir: data
     temp_data_dir: temp_data
     sub_folders: ["en", "hi"]
+    chunk_line: 100000
     ckpts_bkt: tokenizer_cfgs
     
 

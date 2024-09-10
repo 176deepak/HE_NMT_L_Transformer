@@ -19,42 +19,31 @@ class WordEmbedding:
         
         self.src_data = os.path.join(self.cfgs['Artifacts']['root_dir'], self.cfgs['Embedding']['src_data_dir'])
         self.ckpts_dir = os.path.join(self.cfgs['Artifacts']['root_dir'], self.cfgs['Embedding']['ckpts_bkt'])
-        self.sub_dirs = self.cfgs['Embedding']['sub_folders']
-        
+    
         os.makedirs(self.ckpts_dir, exist_ok=True)
-
-        for dir in self.sub_dirs:
-            os.makedirs(os.path.join(self.ckpts_dir, dir), exist_ok=True)
             
         self.files = os.listdir(self.src_data)
         
-        self.dfs = []
-        for file in self.files:
-            file_path = os.path.join(self.src_data, file)
-            self.dfs.append(pd.read_csv(file_path))
-        
+        self.dfs = [pd.read_csv(os.path.join(self.src_data, file)) for file in os.listdir(self.src_data)]        
         self.df = pd.concat(self.dfs, ignore_index=True)
         self.df.dropna(ignore_index=True, inplace=True)
-            
         del self.dfs
             
     def train_embedding(self, tokenizer, flag):
-        col = flag
-        
-        if flag=='hi':
-            sentences = [f"[SOS] {seq} [EOS]" for seq in self.df[col]]
-        else:
-            sentences = list(self.df[col])
-        
+        all_sentences = [
+            f"[SOS] {seq} [EOS]" if col == flag else seq
+            for col in self.df.columns
+            for seq in self.df[col]
+        ]        
         
         seqs_of_tokens = []
         
         batch_size = 32
-        total_batches = (len(sentences) + batch_size - 1) // batch_size
+        total_batches = (len(all_sentences) + batch_size - 1) // batch_size
         
-        for batched_seqs in tqdm(batch_generator(sentences), desc=f"{col} Tokens Generation:", colour='green', ncols=100, total=total_batches):
+        for batched_seqs in tqdm(batch_generator(all_sentences), desc=f"Tokens Generation & Embedding Training:", colour='green', ncols=100, total=total_batches):
             batched_tokens = tokens_for_embeddings(tokenizer, batched_seqs)
             seqs_of_tokens.extend(batched_tokens)
         model = Word2Vec(sentences=seqs_of_tokens, vector_size=512, seed=42, workers=3, sg=0, )
-        model.save(os.path.join(self.ckpts_dir, col, 'model.model'))            
+        model.save(os.path.join(self.ckpts_dir, 'model.model'))            
 

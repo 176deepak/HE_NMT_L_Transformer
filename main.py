@@ -21,6 +21,7 @@ trml_cols = trml_size.columns
 
 # add arguments in script execution command, which will help in for deciding whether the tokenizer and embeddings training
 parser = argparse.ArgumentParser(description="Run specific code blocks based on boolean flags.")
+parser.add_argument("--LoadData", action="store_true", help="Helps to execute the Data Loader")
 parser.add_argument("--TrainTokenizer", action="store_true", help="Helps to execute the Tokenizer step & Embedding Step")
 parser.add_argument("--TrainEmbedding", action="store_true", help="Helps to execute the Embedding Step")
 args = parser.parse_args()
@@ -36,11 +37,12 @@ os.makedirs(cfgs['Artifacts']['root_dir'], exist_ok=True)
     
 
 # Step 1: Load the Data from src + Data Cleaning
-print("\nData Loading: ")
-print("+"*trml_cols)
-loader = DataLoader()
-loader.load_data()
-print("+"*trml_cols, end="\n\n")
+if args.LoadData:
+    print("\nData Loading: ")
+    print("+"*trml_cols)
+    loader = DataLoader()
+    loader.load_data()
+    print("+"*trml_cols, end="\n\n")
 
 
 # Step 2: Train Tokenizer on loaded data, if you want
@@ -53,61 +55,39 @@ if args.TrainTokenizer:
 
     TOKENIZER_CKPTS = os.path.join(cfgs['Artifacts']['root_dir'], cfgs['Tokenizer']['ckpts_bkt'])
     os.makedirs(TOKENIZER_CKPTS, exist_ok=True)
-    sub_dirs = cfgs['Tokenizer']['sub_folders']
+    # sub_dirs = cfgs['Tokenizer']['sub_folders']
     data_bkt = os.path.join(cfgs['Tokenizer']['root_dir'], cfgs['Tokenizer']['temp_data_dir'])
 
-    for dir in sub_dirs:
-        print(f"Train {dir} Tokenizer")
-        os.makedirs(os.path.join(TOKENIZER_CKPTS, dir), exist_ok=True)
-
-        if dir == 'en':
-            bpe_tokenizer = BPE_Tokenizer(
-                special_tokens=["[UNK]", "[CLS]", "[SEP]", "[PAD]", "[MASK]", "[SOS]", "[EOS]"], 
-                unk_token="[UNK]", 
-                norm_seq=normalizers.Sequence([NFD(), StripAccents()]), 
-                pre_tokenizer=Whitespace(), 
-                vocab_size=2_08_000, 
-                min_frequency=2, 
-                continuing_subword_prefix="##",
-                max_token_length=10
-            )    
-            tokenizer = bpe_tokenizer.train(os.path.join(data_bkt, dir))
-            tokenizer.save(os.path.join(TOKENIZER_CKPTS, dir, 'tokenizer.json'))
-        
-        if dir == 'hi':
-            bpe_tokenizer = BPE_Tokenizer(
-                special_tokens=["[UNK]", "[CLS]", "[SEP]", "[PAD]", "[MASK]", "[SOS]", "[EOS]"], 
-                unk_token="[UNK]", 
-                pre_tokenizer=Whitespace(), 
-                vocab_size=2_08_000, 
-                min_frequency=1, 
-                continuing_subword_prefix="##",
-                max_token_length=10
-            )    
-            tokenizer = bpe_tokenizer.train(os.path.join(data_bkt, dir))
-            tokenizer.save(os.path.join(TOKENIZER_CKPTS, dir, 'tokenizer.json'))
-            
-        print("\n")
-            
+    bpe_tokenizer = BPE_Tokenizer(
+        special_tokens=["[UNK]", "[CLS]", "[SEP]", "[PAD]", "[MASK]", "[SOS]", "[EOS]"], 
+        unk_token="[UNK]", 
+        # norm_seq=normalizers.Sequence([NFD(), StripAccents()]), 
+        pre_tokenizer=Whitespace(), 
+        vocab_size=4_16_000, 
+        min_frequency=2, 
+        continuing_subword_prefix="##",
+        max_token_length=10
+    )    
+    tokenizer = bpe_tokenizer.train(data_bkt)
+    tokenizer.save(os.path.join(TOKENIZER_CKPTS, 'tokenizer.json'))
+    
     shutil.rmtree(data_bkt)
     print("+"*trml_cols, end="\n\n")
-
 
 # Step 3: Train Word2Vec embedding model on custom tokens data, if you want
 if args.TrainEmbedding:
     print("\nTrain Word Embedding: ")
     print("+"*trml_cols)
     word2vec = WordEmbedding()
-    for dir in tqdm(cfgs['Embedding']['sub_folders'], desc="Word2Vec Embedding Training: ", colour="green", ncols=100, total=len(cfgs['Embedding']['sub_folders'])):    
-        tokenizer = Tokenizer.from_file(os.path.join(cfgs['Artifacts']['root_dir'], cfgs['Tokenizer']['ckpts_bkt'], dir, 'tokenizer.json'))
-        tokenizer.enable_padding(
-            direction='right',
-            pad_id=3,
-            pad_type_id=0,
-            pad_token='[PAD]',
-            length=None)
-        word2vec.train_embedding(tokenizer=tokenizer, flag=dir)
-        print('\n')
+    tokenizer = Tokenizer.from_file(os.path.join(cfgs['Artifacts']['root_dir'], cfgs['Tokenizer']['ckpts_bkt'], 'tokenizer.json'))
+    tokenizer.enable_padding(
+        direction='right',
+        pad_id=3,
+        pad_type_id=0,
+        pad_token='[PAD]',
+        length=None)
+    word2vec.train_embedding(tokenizer=tokenizer, flag='hi')
+    print('\n')
     print("+"*trml_cols)
     
 # Step 4: Train Transformer model on custom dataset with using trained/pre-trained tokenizer and word embeddings.
