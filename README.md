@@ -70,7 +70,7 @@ After executing above command in terminal, you will see below output logs on you
 ![Word Embedding](/screenshot/Screenshot%202024-09-03%20163724.png)
 
 The above command execution, create the following directories and stores the data, tokenizer configs, embedding checkpoints, word embeddings.
-![Artifacts Folder](/screenshot/Screenshot%202024-09-04%20223101.png)
+![Artifacts Folder](/screenshot/Screenshot%202024-09-11%20224648.png)
 
 `Note: You can execute the main file without args also. This is just for training the tokenizer and embedding on loaded data.`
 
